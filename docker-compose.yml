@@ -1,0 +1,58 @@
+services:
+  app:
+    image: ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
+    container_name: noonsori-app
+    env_file:
+      - .env
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - REDIS_URL=${REDIS_URL}
+      - CACHE_REDIS_URL=${CACHE_REDIS_URL}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+    depends_on:
+      redis:
+        condition: service_started
+    expose:
+      - "8000"
+    networks:
+      - noonsori-net
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/healthz || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: noonsori-redis
+    command: [ "redis-server","--save","", "--appendonly","no" ]
+    networks: noonsori-net
+    restart: always
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks: noonsori-net
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    ports:
+      - "9876:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - noonsori-net
+    restart: always
+
+networks:
+  noonsori-net:
+    driver: bridge
