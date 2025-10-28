@@ -27,7 +27,8 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 모델을 코드 경로(/app/models)로 복사 → settings.py(MODELS_DIR)와 일치
-RUN mkdir -p /app/models && cp -a /opt/models/. /app/models/
+RUN mkdir -p /app/models
+COPY --from=models /opt/models/ /app/models/
 
 ############################
 # (C) Runtime stage (가볍게)
