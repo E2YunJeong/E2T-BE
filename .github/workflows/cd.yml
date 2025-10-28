@@ -58,7 +58,9 @@ jobs:
             cd ~/noonsori
 
             echo "📄 .env 생성 중..."
-            printf "${{ secrets.ENV_FILE }}" > .env
+            cat > .env <<'ENV_EOF'
+            ${{ secrets.ENV_FILE }}
+            ENV_EOF
             
             echo "🛠️ Docker 재배포 중"
             docker compose down
