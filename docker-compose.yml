@@ -2,8 +2,6 @@ services:
   app:
     image: ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
     container_name: noonsori-app
-    env_file:
-      - .env
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - REDIS_URL=${REDIS_URL}
@@ -27,7 +25,8 @@ services:
     image: redis:7-alpine
     container_name: noonsori-redis
     command: [ "redis-server","--save","", "--appendonly","no" ]
-    networks: noonsori-net
+    networks:
+      - noonsori-net
     restart: always
 
   nginx:
@@ -40,7 +39,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - app
-    networks: noonsori-net
+    networks:
+      - noonsori-net
 
   dozzle:
     image: amir20/dozzle:latest
