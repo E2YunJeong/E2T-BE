@@ -27,7 +27,6 @@ services:
     command: [ "redis-server","--save","", "--appendonly","no" ]
     networks:
       - noonsori-net
-    restart: always
 
   nginx:
     build: ./nginx
@@ -46,7 +45,7 @@ services:
     image: amir20/dozzle:latest
     container_name: dozzle
     ports:
-      - "9876:8000"
+      - "9876:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
