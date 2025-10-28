@@ -11,8 +11,8 @@ services:
     depends_on:
       redis:
         condition: service_started
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     networks:
       - noonsori-net
     healthcheck:
